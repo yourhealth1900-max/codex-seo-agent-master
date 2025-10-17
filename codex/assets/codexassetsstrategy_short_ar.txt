@@ -1,0 +1,191 @@
+Got it. Here’s a **complete, reusable strategy** (what to do + how to check) and a **copy-paste master prompt** you can hand to any writer/agent to produce a fully-compliant long article like the one we built—mobile-first, SEO-ready, SGE/AI-friendly, with schema, E-E-A-T, CTAs, and monetization.
+
+---
+
+# 1) Strategy — the exact playbook
+
+## A) Goals & guardrails
+
+* **Primary goal:** rank on the **brand/topic focus keyword** without cannibalizing existing posts.
+* **Secondaries:** qualify for **Rich Results** (FAQPage), **AI Overviews/SGE**, and convert via **clean CTAs**.
+* **No fluff:** zero padding/repetition. Every section must add new value.
+
+## B) Inputs the agent must collect
+
+* **Focus keyword (FK)**: unique site-wide (e.g., `CortiSync` not “CortiSync Review” if that’s used elsewhere).
+* **Slug/canonical**: short, evergreen (e.g., `/cortisync/`).
+* **Affiliate data**: buttons, banners, code (e.g., `.../ct/618161`), secondary products (CalmLean, DIM3X).
+* **Internal links list**: 8–15 approved URLs with preferred anchors.
+* **Medical team**: names + profile URLs for E-E-A-T box.
+* **Brand tone**: clinical / commercial balance %.
+* **Images**: at least 1 featured (1200×630), product images (with dimensions).
+
+## C) Page structure (longform, scan-friendly)
+
+1. **H1** with FK near the start (no year if evergreen).
+2. **Answer-First** block (45–60 words).
+3. **TOC** with jump links.
+4. **Body sections** (unique content per section):
+
+   * Mechanism & “where it fits”
+   * Ingredient deep-dive (what/why/standards)
+   * Dose & timing (standard vs conservative)
+   * 30-day plan
+   * Sleep protocol
+   * Nutrition
+   * Training/recovery
+   * Stacks (secondary products)
+   * Safety/contraindications matrix
+   * Alternatives/compare table
+   * Troubleshooting decision-tree
+   * Metrics/checklist to measure progress
+5. **FAQs (8–10)** — purchase, guarantee, dosage, caffeine, interactions, miss a dose, stacking, results timeline, measurement.
+6. **Doctors (E-E-A-T) box** — 3–6 reviewers with links to bios.
+7. **CTAs** — top/mid/end + sticky mobile bar.
+8. **Resources** — internal links list.
+
+**Word count target:** 4,500–6,500 words.
+**Keyword density:** FK ≈ **0.8–1.5%** overall; never >2 uses per paragraph; use synonyms/LSI.
+
+## D) Metadata
+
+* **Title (≤60 chars)**: FK first + number + power word (no year for evergreen).
+  *Example:* `CortiSync — 7 Proven Benefits (Science-Backed Guide)`
+* **Meta description (150–160)**: include FK once + hook + benefit + CTA.
+* **Canonical**: exact final permalink with FK (e.g., `/cortisync/`).
+* **OG/Twitter**: summary_large_image + same title/description + featured image URL.
+
+## E) Schema (one @graph only)
+
+Include: `Organization`, `WebPage`, `BreadcrumbList`, `ImageObject`, `Article`, **`FAQPage` with `mainEntity`** (each `Question` has `acceptedAnswer`).
+
+* Set stable `@id`s: `.../#webpage`, `.../#bread`, `.../#primaryimage`, `.../#article`, `.../#faq`, and per question `.../#q1…#q10`.
+* **No Product Offers** if it’s editorial (use Product only if you’re the store).
+
+## F) Links
+
+* **Internal**: 8–15 dofollow to relevant evergreen guides (with specific anchors).
+* **Outbound authority**: **15+ dofollow** (NCCIH, Examine, PubMed/PMC, Mayo, Cleveland Clinic, Johns Hopkins, NIH ODS, MedlinePlus, WHO, CDC, Sleep Foundation…).
+* **Affiliate**: `rel="sponsored noopener"` on buttons/banners only.
+
+## G) Mobile-first UX (non-negotiable)
+
+* Paragraphs ≤45–50 words. Subheads every 150–250 words.
+* **Responsive tables**: stacked on ≤640px (use `data-label` or JS to auto-label).
+* **Images**: `width` & `height` attributes + `loading="lazy"`. Use WebP if possible.
+* **Sticky mobile CTA** at bottom; hide on desktop.
+
+## H) Distribution of CTAs/media
+
+* CTA under hook, after 2–3 sections, and at conclusion.
+* Insert **product-block** (image + short copy + button) after key sections (Formula, Sleep, Nutrition).
+* Keep visual rhythm ~every 500–700 words.
+
+## I) Compliance & tone
+
+* **Medical disclaimer** present.
+* Precautions/contra-indications section.
+* No dramatic claims or diagnosis.
+
+## J) QA checklist (before publish)
+
+* Focus KW unique site-wide; in Title/Meta/Slug/Answer-First/H2 or two.
+* Meta length OK; OG/Twitter set.
+* **FAQ Rich Result**: validate (FAQPage has `mainEntity`).
+* 15+ outbound authority links; 8+ internal; affiliates flagged.
+* Tables responsive; images sized; sticky mobile CTA visible on phone.
+* Lighthouse mobile score >85; CLS <0.1 if possible.
+* Upload featured image 1200×630; ALT/Title/Caption set.
+
+---
+
+# 2) Master Prompt (give this to any agent)
+
+> **ROLE:** Senior SEO + medical-aware copywriter. Produce a **publish-ready .txt file** that contains the **entire HTML page**.
+> **LANGUAGE:** Article must be **English**.
+> **TONE:** Evidence-based, clear, non-hype; persuasive CTAs allowed.
+> **GOAL:** Rank for the **brand/topic focus keyword** while remaining evergreen and conversion-ready.
+
+**Inputs**
+
+* **FOCUS_KEYWORD:** `{{FOCUS_KEYWORD}}` (unique site-wide; e.g., `CortiSync`)
+* **SLUG:** `{{SLUG}}` (short; e.g., `cortisync`)
+* **AFFILIATE_PRIMARY:** `{{AFFILIATE_PRIMARY}}` (e.g., `https://www.cortisync.com/ct/618161`)
+* **AFFILIATE_SECONDARY_1:** `{{AFFILIATE_SECONDARY_1}}` (CalmLean)
+* **AFFILIATE_SECONDARY_2:** `{{AFFILIATE_SECONDARY_2}}` (DIM3X)
+* **INTERNAL_LINKS:** list of 8–15 `{url, anchor}`
+* **DOCTORS:** list of 3–6 `{name, profile_url, specialty}`
+* **FEATURED_IMAGE_URL:** `{{FEATURED_IMAGE_URL}}` (1200×630)
+
+**OUTPUT REQUIREMENTS**
+
+1. **One .txt** file containing **full HTML**: `<!DOCTYPE html>` … `</html>`.
+2. **Metadata** in `<head>`:
+
+   * `<title>`: `{{FOCUS_KEYWORD}} — 7 Proven Benefits (Science-Backed Guide)` (no year).
+   * `<meta name="description" content="... {{FOCUS_KEYWORD}} ...">` (150–160 chars).
+   * `<link rel="canonical" href="https://www.site.com/{{SLUG}}/">`
+   * OpenGraph/Twitter tags using the same title/description and `{{FEATURED_IMAGE_URL}}`.
+3. **Mobile-first CSS**: include styles to stack tables on ≤640px, spacing, buttons, sticky mobile CTA styles.
+4. **Hook + CTA** under H1; 2 more CTAs mid/end; **sticky mobile CTA** at bottom.
+5. **Body layout** (4,500–6,500 words), with **TOC** and these sections (each unique, no repetition):
+
+   * Answer-First (45–60 words)
+   * Mechanism & where it fits
+   * Ingredients deep-dive (quality/standardization)
+   * Dose & timing (standard vs conservative ladders)
+   * 30-day plan
+   * Sleep protocol
+   * Nutrition
+   * Training & recovery
+   * Stacks (with **product blocks** for `{{AFFILIATE_SECONDARY_1}}` and `{{AFFILIATE_SECONDARY_2}}`)
+   * Safety / contraindications matrix (table)
+   * Alternatives compare (table)
+   * Troubleshooting decision tree
+   * Metrics checklist
+   * FAQs (8–10 purchase/usage/safety questions)
+6. **E-E-A-T Doctors Box** with `{{DOCTORS}}` (name + profile link + specialty).
+7. **Links**:
+
+   * Insert all **INTERNAL_LINKS** (dofollow) with given anchors.
+   * Include **15+ dofollow authority links** (NCCIH, Examine, PubMed/PMC, Mayo, Cleveland Clinic, Johns Hopkins, NIH ODS, MedlinePlus, WHO, CDC, Sleep Foundation…).
+   * All **affiliate** links must have `rel="sponsored noopener"`.
+8. **Responsive tables**:
+
+   * Add class `stack`.
+   * Add `data-label` to `<td>` (or include a tiny JS that copies `<thead>` labels into `data-label`).
+9. **Images**:
+
+   * All `<img>` tags include `width`, `height`, `loading="lazy"`.
+   * Use `{{FEATURED_IMAGE_URL}}` once near top with proper ALT/figcaption.
+10. **Schema (JSON-LD)** — **one `<script type="application/ld+json">`** with an `@graph` that includes:
+
+* `Organization` (`#org`), `WebPage` (`#webpage`), `BreadcrumbList` (`#bread`), `ImageObject` (`#primaryimage`), `Article` (`#article`), and **`FAQPage` (`#faq`) with `mainEntity` = array of Questions (`#q1…#q10`) with `acceptedAnswer`.**
+* Use `https://www.site.com/{{SLUG}}/` base for all `@id`s.
+
+11. **Compliance**: Add a Medical Disclaimer; no medical claims; include precautions.
+
+**NON-NEGOTIABLES**
+
+* No repeated/filler paragraphs.
+* FK density 0.8–1.5%, never >2 mentions per paragraph.
+* Every section adds new information.
+* Deliver as a **single .txt** with the full HTML only (no extra commentary).
+
+**POST-BUILD SELF-CHECKS (agent must verify before handing off)**
+
+* Run Rich Results Test → **FAQPage valid** (has `mainEntity`).
+* Confirm 15+ dofollow authority links, 8+ internal links, affiliates labeled sponsored.
+* Mobile tables stack correctly; sticky mobile CTA visible.
+* Images have dimensions; page passes basic Lighthouse mobile checks (≥85).
+* Title/Meta lengths OK; OG/Twitter present.
+
+---
+
+# 3) Quick hand-off notes you can send with the prompt
+
+* Provide the agent with: FK, slug, affiliate URLs, internal links CSV, doctor bios/links, and featured image path.
+* Ask for **two variants** of Title/Meta for CTR testing.
+* After delivery, paste HTML to WordPress (HTML block), purge cache/CDN, and **Validate fix** in GSC.
+
+If you want, I can convert this strategy into a **fillable Google Doc checklist** or a **.md template** your team can duplicate for each new article.
