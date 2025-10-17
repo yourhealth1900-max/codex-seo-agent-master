@@ -38,14 +38,14 @@ jobs:
           if [ -f "$run/article.html" ]; then
             cp "$run/article.html" "$run/exports/article_full_html.txt"
           fi
-      - name: Build TXT metadata (tolerant)
+      - name: Build JSON metadata (tolerant)
         if: steps.r.outputs.run_dir != '__NONE__'
         shell: bash
         run: |
           run="${{ steps.r.outputs.run_dir }}"
           meta_json="$run/metadata.json"
           html="$run/article.html"
-          txt="$run/exports/metadata_bundle.txt"
+          json="$run/exports/metadata_bundle.json"
           # Safe getters
           get() { jq -r "$1 // empty" "$meta_json" 2>/dev/null || echo ""; }
           title="$(get .title)"
@@ -76,19 +76,48 @@ jobs:
           ig_url="$(getm .infographic.url)"
           ig_w="$(getm .infographic.width)"
           ig_h="$(getm .infographic.height)"
-          {
-            echo "SEO Title: ${title}"
-            echo "Meta Description (150): ${meta}"
-            echo "Slug: ${slug}"
-            echo "Canonical: ${canon}"
-            echo "Focus KW: ${fkw}"
-            echo "Secondary KWs: ${skw}"
-            echo "Word Count: ${wc}"
-            echo "Internal Links Count: (analyze in WP after paste)"
-            echo "Feature Image: ${fi_title} | ${fi_alt} | ${fi_url} | ${fi_w}x${fi_h}"
-            echo "Infographic: ${ig_title} | ${ig_alt} | ${ig_url} | ${ig_w}x${ig_h}"
-            echo "Notes:"
-          } > "$txt"
+          # Create JSON output
+          jq -n \
+            --arg title "$title" \
+            --arg meta "$meta" \
+            --arg slug "$slug" \
+            --arg canon "$canon" \
+            --arg fkw "$fkw" \
+            --arg skw "$skw" \
+            --argjson wc "$wc" \
+            --arg fi_title "$fi_title" \
+            --arg fi_alt "$fi_alt" \
+            --arg fi_url "$fi_url" \
+            --arg fi_w "$fi_w" \
+            --arg fi_h "$fi_h" \
+            --arg ig_title "$ig_title" \
+            --arg ig_alt "$ig_alt" \
+            --arg ig_url "$ig_url" \
+            --arg ig_w "$ig_w" \
+            --arg ig_h "$ig_h" \
+            '{
+              seo_title: $title,
+              meta_description: $meta,
+              slug: $slug,
+              canonical: $canon,
+              focus_keyword: $fkw,
+              secondary_keywords: $skw,
+              word_count: $wc,
+              internal_links_count: "(analyze in WP after paste)",
+              feature_image: {
+                title: $fi_title,
+                alt: $fi_alt,
+                url: $fi_url,
+                dimensions: ($fi_w + "x" + $fi_h)
+              },
+              infographic: {
+                title: $ig_title,
+                alt: $ig_alt,
+                url: $ig_url,
+                dimensions: ($ig_w + "x" + $ig_h)
+              },
+              notes: ""
+            }' > "$json"
       - name: Zip bundle + upload artifact
         if: steps.r.outputs.run_dir != '__NONE__'
         shell: bash
@@ -97,7 +126,7 @@ jobs:
           zip -j "$run/exports/publish_bundle.zip" \
             "$run/article.html" \
             "$run/exports/article_full_html.txt" \
-            "$run/exports/metadata_bundle.txt"
+            "$run/exports/metadata_bundle.json"
       - name: Upload artifact
         if: steps.r.outputs.run_dir != '__NONE__'
         uses: actions/upload-artifact@v4
