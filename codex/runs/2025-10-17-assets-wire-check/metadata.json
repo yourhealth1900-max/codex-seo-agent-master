@@ -1,0 +1,21 @@
+{
+  "title": "Codex Asset Ingestion & CI Pipeline Verification",
+  "focus_keyword": "Codex asset verification",
+  "run_date": "2025-10-17",
+  "purpose": "assets-wire-check",
+  "asset_files": [
+    "codexassetsANTI_GAGING_PRODUCTS_CODES.txt",
+    "codexassetsstrategy_short_ar.txt"
+  ],
+  "data_artifacts": [
+    "products.csv",
+    "images.html",
+    "internal_links.json"
+  ],
+  "workflow": "Dual Exports (Universal)",
+  "expected_artifact": "publish_bundle.zip",
+  "artifact_contents": [
+    "article_full_html.txt",
+    "metadata_bundle.json"
+  ]
+}
