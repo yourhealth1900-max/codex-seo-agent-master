@@ -1,0 +1,8 @@
+{
+  "title": "Sample Focus Keyword — Starter",
+  "meta_description": "Starter run to trigger the Universal Dual Exports workflow.",
+  "slug": "sample-focus-keyword",
+  "canonical_url": "https://example.com/sample-focus-keyword/",
+  "focus_kw": "sample focus keyword",
+  "secondary_kws": ["overview", "guide", "basics"]
+}
