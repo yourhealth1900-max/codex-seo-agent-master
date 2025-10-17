@@ -1,0 +1,139 @@
+name: Dual Exports + TXT Metadata + ZIP Artifact
+
+on:
+  push:
+    paths:
+      - 'codex/runs/**'
+  workflow_dispatch:
+
+jobs:
+  dual-exports:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Detect latest run folder
+        id: detect
+        run: |
+          RUN_DIR=$(ls -td codex/runs/* 2>/dev/null | head -n1)
+          if [ -z "$RUN_DIR" ]; then
+            echo "No run folders found"
+            exit 1
+          fi
+          echo "RUN_DIR=$RUN_DIR" >> $GITHUB_ENV
+          echo "Detected latest run: $RUN_DIR"
+          
+      - name: Create exports directory
+        run: |
+          mkdir -p "$RUN_DIR/exports"
+          echo "Created exports directory"
+          
+      - name: Create article_full_html.txt
+        run: |
+          if [ ! -f "$RUN_DIR/exports/article_full_html.txt" ]; then
+            if [ -f "$RUN_DIR/article.html" ]; then
+              cp "$RUN_DIR/article.html" "$RUN_DIR/exports/article_full_html.txt"
+              echo "Created article_full_html.txt"
+            else
+              echo "Warning: article.html not found"
+            fi
+          else
+            echo "article_full_html.txt already exists"
+          fi
+          
+      - name: Create metadata_bundle.json
+        run: |
+          if [ ! -f "$RUN_DIR/exports/metadata_bundle.json" ] && [ -f "$RUN_DIR/metadata.json" ]; then
+            # Create minimal metadata bundle
+            if [ -f "$RUN_DIR/assets/media_meta.json" ]; then
+              jq -s '.[0] * .[1]' "$RUN_DIR/metadata.json" "$RUN_DIR/assets/media_meta.json" > "$RUN_DIR/exports/metadata_bundle.json"
+            else
+              cp "$RUN_DIR/metadata.json" "$RUN_DIR/exports/metadata_bundle.json"
+            fi
+            echo "Created metadata_bundle.json"
+          else
+            echo "metadata_bundle.json exists or metadata.json not found"
+          fi
+          
+      - name: Create metadata_bundle.txt
+        run: |
+          # Extract metadata and create TXT format
+          METADATA_FILE="$RUN_DIR/exports/metadata_bundle.json"
+          if [ ! -f "$METADATA_FILE" ]; then
+            METADATA_FILE="$RUN_DIR/metadata.json"
+          fi
+          
+          OUTPUT_FILE="$RUN_DIR/exports/metadata_bundle.txt"
+          
+          if [ -f "$METADATA_FILE" ]; then
+            # Count words in article.html
+            WORD_COUNT=0
+            if [ -f "$RUN_DIR/article.html" ]; then
+              WORD_COUNT=$(sed 's/<[^>]*>//g' "$RUN_DIR/article.html" | wc -w)
+            fi
+            
+            # Count internal links
+            INTERNAL_LINKS=0
+            if [ -f "$RUN_DIR/article.html" ]; then
+              INTERNAL_LINKS=$(grep -o '<a[^>]*href="[^"]*"' "$RUN_DIR/article.html" | grep -v 'http' | wc -l)
+            fi
+            
+            # Extract fields from JSON
+            SEO_TITLE=$(jq -r '.seo_title // .title // ""' "$METADATA_FILE")
+            META_DESC=$(jq -r '.meta_description // .description // ""' "$METADATA_FILE" | head -c 150)
+            SLUG=$(jq -r '.slug // ""' "$METADATA_FILE")
+            CANONICAL=$(jq -r '.canonical_url // ""' "$METADATA_FILE")
+            FOCUS_KW=$(jq -r '.focus_keyword // .primary_keyword // ""' "$METADATA_FILE")
+            SECONDARY_KWS=$(jq -r '.secondary_keywords // [] | join(", ")' "$METADATA_FILE")
+            
+            # Feature Image
+            FEATURE_IMG_TITLE=$(jq -r '.feature_image.title // ""' "$METADATA_FILE")
+            FEATURE_IMG_ALT=$(jq -r '.feature_image.alt // ""' "$METADATA_FILE")
+            FEATURE_IMG_URL=$(jq -r '.feature_image.url // ""' "$METADATA_FILE")
+            FEATURE_IMG_WIDTH=$(jq -r '.feature_image.width // ""' "$METADATA_FILE")
+            FEATURE_IMG_HEIGHT=$(jq -r '.feature_image.height // ""' "$METADATA_FILE")
+            
+            # Infographic
+            INFOGRAPHIC_TITLE=$(jq -r '.infographic.title // ""' "$METADATA_FILE")
+            INFOGRAPHIC_ALT=$(jq -r '.infographic.alt // ""' "$METADATA_FILE")
+            INFOGRAPHIC_URL=$(jq -r '.infographic.url // ""' "$METADATA_FILE")
+            INFOGRAPHIC_WIDTH=$(jq -r '.infographic.width // ""' "$METADATA_FILE")
+            INFOGRAPHIC_HEIGHT=$(jq -r '.infographic.height // ""' "$METADATA_FILE")
+            
+            # Create TXT file
+            cat > "$OUTPUT_FILE" << EOF
+SEO Title: $SEO_TITLE
+Meta Description: $META_DESC
+Slug: $SLUG
+Canonical: $CANONICAL
+Focus KW: $FOCUS_KW
+Secondary KWs: $SECONDARY_KWS
+Word Count: $WORD_COUNT
+Internal Links Count: $INTERNAL_LINKS
+Feature Image: $FEATURE_IMG_TITLE | $FEATURE_IMG_ALT | $FEATURE_IMG_URL | ${FEATURE_IMG_WIDTH}x${FEATURE_IMG_HEIGHT}
+Infographic: $INFOGRAPHIC_TITLE | $INFOGRAPHIC_ALT | $INFOGRAPHIC_URL | ${INFOGRAPHIC_WIDTH}x${INFOGRAPHIC_HEIGHT}
+Notes: 
+EOF
+            echo "Created metadata_bundle.txt"
+          else
+            echo "No metadata file found"
+          fi
+          
+      - name: Create publish_bundle.zip
+        run: |
+          cd "$RUN_DIR/exports"
+          zip -j publish_bundle.zip \
+            "../article.html" \
+            "article_full_html.txt" \
+            "metadata_bundle.txt" 2>/dev/null || true
+          cd - > /dev/null
+          echo "Created publish_bundle.zip"
+          
+      - name: Upload publish_bundle artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: publish_bundle
+          path: ${{ env.RUN_DIR }}/exports/publish_bundle.zip
+          if-no-files-found: warn
